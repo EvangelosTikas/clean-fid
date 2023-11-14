@@ -191,7 +191,7 @@ Compute the FID stats from a generator model
 def get_model_features(G, model, mode="clean", z_dim=512,
         num_gen=50_000, batch_size=128, device=torch.device("cuda"),
         desc="FID model: ", verbose=True, return_z=False,
-        custom_image_tranform=None, custom_fn_resize=None):
+        custom_image_tranform=None, custom_fn_resize=None, rgb=True):
     if custom_fn_resize is None:
         fn_resize = build_resizer(mode)
     else:
@@ -207,7 +207,10 @@ def get_model_features(G, model, mode="clean", z_dim=512,
         pbar = range(num_iters)
     for idx in pbar:
         with torch.no_grad():
-            z_batch = torch.randn((batch_size, z_dim)).to(device)
+            if rgb == False:
+                z_batch = torch.randn((batch_size, z_dim)).to(device)
+            else:
+                z_batch = torch.randn((batch_size, z_dim,1,1)).to(device)
             if return_z:
                 latents.append(z_batch)
             # generated image is in range [0,255]
